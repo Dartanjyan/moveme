@@ -1,3 +1,0 @@
-/home/alex/my_projects/moveme/build/CMakeFiles/moveme.dir
-/home/alex/my_projects/moveme/build/CMakeFiles/edit_cache.dir
-/home/alex/my_projects/moveme/build/CMakeFiles/rebuild_cache.dir
