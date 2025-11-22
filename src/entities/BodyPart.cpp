@@ -1,6 +1,6 @@
 #include "BodyPart.h"
 
-BodyPart::BodyPart(BodyPart *parent, unsigned length) : parent(parent), length(length) {
+BodyPart::BodyPart(BodyPart *parent, Vector2 p1, Vector2 p2) : p1(p1), p2(p2) {
     this->parent->addChild(this);
 }
 

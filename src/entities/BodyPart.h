@@ -6,15 +6,17 @@
 
 class BodyPart {
 public:
-    BodyPart(BodyPart *parent, unsigned length);
+    BodyPart(BodyPart *parent, Vector2 p1, Vector2 p2);
     ~BodyPart();
 
-    unsigned getLength() { return length; }
     std::vector<BodyPart *> getChildren() { return children; }
     BodyPart* getParent() { return parent; }
     void addChild(BodyPart *child) { children.push_back(child); }
+    Vector2 getPoint1() const { return p1; }
+    Vector2 getPoint2() const { return p2; }
 private:
-    unsigned length;
+    Vector2 p1, p2;
+
     std::vector<BodyPart *> children;
     BodyPart *parent;
 };

@@ -26,9 +26,11 @@ int ApplicationManager::run()
         elapsed_time = current_time - previous_time;
         previous_time = current_time;
 
+
         // Code
         running = app->update();
 
+        
         const auto processing_time = duration_cast<milliseconds>(
             high_resolution_clock::now() - current_time
         );

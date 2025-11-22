@@ -8,25 +8,19 @@ class Constraint {
 private:
     BodyPart* partA;
     BodyPart* partB;
-    Vector2 anchorA;
-    float rest;
-    float stiffness;
-    float damping;
+    Vector2 anchor;
+    float power;
     float minAngle;
     float maxAngle;
 
 public:
-    Constraint(BodyPart* partA, BodyPart* partB,
-        Vector2 anchorA = Vector2{},
-        float rest = 0.0f, float stiffness = 8e5, 
-        float damping = 4e4);
-    ~Constraint();
+    Constraint(BodyPart* partA, BodyPart* partB, Vector2 anchor, float power = 1);
+    Constraint(BodyPart* partA, BodyPart* partB, float power = 1);
 
     BodyPart* getPartA() const { return partA; }
     BodyPart* getPartB() const { return partB; }
-    Vector2 getAnchorA() const { return anchorA; }
-    float getStiffness() const { return stiffness; }
-    float getDamping() const { return damping; }
+    Vector2 getAnchor() const { return anchor; }
+    float getPower() const { return power; }
     float getMinAngle() const { return minAngle; }
     float getMaxAngle() const { return maxAngle; }
 
@@ -34,10 +28,8 @@ public:
 
     void setBodyA(BodyPart* part) { partA = part; }
     void setBodyB(BodyPart* part) { partB = part; }
-    void setAnchorA(Vector2 anchor) { anchorA = anchor; }
-    void setRest(float value) { rest = value; }
-    void setStiffness(float value) { stiffness = value; }
-    void setDamping(float value) { damping = value; }
+    void setAnchor(Vector2 anchor) { anchor = anchor; }
+    void setPower(float value) { power = value; }
 
 };
 
