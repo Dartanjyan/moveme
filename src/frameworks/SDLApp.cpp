@@ -158,8 +158,8 @@ SDLApp::~SDLApp()
 }
 
 void SDLApp::createTentacle() {
-    const int segmentCount = 3;
-    const float segmentLength = 40.0f;
+    const int segmentCount = 40;
+    const float segmentLength = 5.0f;
     Vector2 basePosition(width / 2.0f, height / 2.0f);
     
     std::vector<BodyPart*> bodyParts;
@@ -277,17 +277,6 @@ void SDLApp::render() {
     }
     SDL_SetRenderDrawColor(renderer, 100, 200, 100, 255);
     drawTaperedCurve(renderer, points, 8, 2, 15);
-    
-    // // Рисуем курсор
-    // if (mouseClicked) {
-    //     SDL_SetRenderDrawColor(renderer, 255, 100, 100, 255);
-    //     SDL_Rect cursorRect = {
-    //         static_cast<int>(mousePos.x - 5), 
-    //         static_cast<int>(mousePos.y - 5), 
-    //         10, 10
-    //     };
-    //     SDL_RenderFillRect(renderer, &cursorRect);
-    // }
 }
 
 int SDLApp::update()
