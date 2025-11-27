@@ -14,6 +14,10 @@ public:
     void addChild(BodyPart *child) { children.push_back(child); }
     Vector2 getPoint1() const { return p1; }
     Vector2 getPoint2() const { return p2; }
+    
+    void setPoint1(Vector2 point) { p1 = point; }
+    void setPoint2(Vector2 point) { p2 = point; }
+    
 private:
     Vector2 p1, p2;
 

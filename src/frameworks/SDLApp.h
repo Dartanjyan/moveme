@@ -2,7 +2,9 @@
 #define SDLAPP_H
 
 #include <SDL2/SDL.h>
+#include <memory>
 #include "IApplication.h"
+#include "Limb.h"
 
 class SDLApp : public IApplication {
 public:
@@ -17,8 +19,14 @@ private:
     SDL_Window *window;
     const char *name;
     const int width, height;
+    
+    std::unique_ptr<Limb> tentacle;
+    Vector2 mousePos;
+    bool mouseClicked;
 
     void handleEvents();
+    void render();
+    void createTentacle();
 };
 
 #endif
