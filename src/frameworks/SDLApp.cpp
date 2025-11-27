@@ -1,8 +1,153 @@
 #include "SDLApp.h"
 #include <iostream>
 
+// Интерполяция Catmull-Rom для плавной кривой
+Vector2 catmullRomInterpolate(const Vector2& p0, const Vector2& p1, 
+                               const Vector2& p2, const Vector2& p3, float t) {
+    float t2 = t * t;
+    float t3 = t2 * t;
+    
+    float x = 0.5f * ((2.0f * p1.x) +
+                      (-p0.x + p2.x) * t +
+                      (2.0f * p0.x - 5.0f * p1.x + 4.0f * p2.x - p3.x) * t2 +
+                      (-p0.x + 3.0f * p1.x - 3.0f * p2.x + p3.x) * t3);
+    
+    float y = 0.5f * ((2.0f * p1.y) +
+                      (-p0.y + p2.y) * t +
+                      (2.0f * p0.y - 5.0f * p1.y + 4.0f * p2.y - p3.y) * t2 +
+                      (-p0.y + 3.0f * p1.y - 3.0f * p2.y + p3.y) * t3);
+    
+    return Vector2(x, y);
+}
+
+// Основная функция для рисования плавной кривой
+void drawSmoothCurve(SDL_Renderer* renderer, const std::vector<Vector2>& points, 
+                     int segmentsPerPoint = 10) {
+    if (points.size() < 2) return;
+    
+    // Если только 2 точки, рисуем прямую линию
+    if (points.size() == 2) {
+        SDL_RenderDrawLine(renderer,
+            static_cast<int>(points[0].x), static_cast<int>(points[0].y),
+            static_cast<int>(points[1].x), static_cast<int>(points[1].y));
+        return;
+    }
+    
+    // Для Catmull-Rom нужны контрольные точки до и после
+    std::vector<Vector2> controlPoints;
+    
+    // Добавляем дублированную первую точку для начала
+    controlPoints.push_back(points[0]);
+    
+    // Добавляем все точки
+    for (const auto& p : points) {
+        controlPoints.push_back(p);
+    }
+    
+    // Добавляем дублированную последнюю точку для конца
+    controlPoints.push_back(points.back());
+    
+    // Рисуем сегменты кривой
+    for (size_t i = 0; i < controlPoints.size() - 3; i++) {
+        Vector2 p0 = controlPoints[i];
+        Vector2 p1 = controlPoints[i + 1];
+        Vector2 p2 = controlPoints[i + 2];
+        Vector2 p3 = controlPoints[i + 3];
+        
+        Vector2 prevPoint = p1;
+        
+        for (int seg = 1; seg <= segmentsPerPoint; seg++) {
+            float t = static_cast<float>(seg) / segmentsPerPoint;
+            Vector2 currentPoint = catmullRomInterpolate(p0, p1, p2, p3, t);
+            
+            SDL_RenderDrawLine(renderer,
+                static_cast<int>(prevPoint.x), static_cast<int>(prevPoint.y),
+                static_cast<int>(currentPoint.x), static_cast<int>(currentPoint.y));
+            
+            prevPoint = currentPoint;
+        }
+    }
+}
+
+// Альтернативная версия с толщиной линии (рисует несколько параллельных кривых)
+void drawThickCurve(SDL_Renderer* renderer, const std::vector<Vector2>& points, 
+                    int thickness = 3, int segmentsPerPoint = 10) {
+    if (points.size() < 2) return;
+    
+    // Рисуем несколько кривых со смещением для создания эффекта толщины
+    for (int offset = -thickness/2; offset <= thickness/2; offset++) {
+        std::vector<Vector2> offsetPoints;
+        
+        for (size_t i = 0; i < points.size(); i++) {
+            // Вычисляем перпендикулярное направление для смещения
+            Vector2 perpendicular;
+            
+            if (i == 0 && points.size() > 1) {
+                Vector2 dir = (points[1] - points[0]).normalized();
+                perpendicular = Vector2(-dir.y, dir.x);
+            } else if (i == points.size() - 1) {
+                Vector2 dir = (points[i] - points[i-1]).normalized();
+                perpendicular = Vector2(-dir.y, dir.x);
+            } else {
+                Vector2 dir = (points[i+1] - points[i-1]).normalized();
+                perpendicular = Vector2(-dir.y, dir.x);
+            }
+            
+            offsetPoints.push_back(points[i] + perpendicular * static_cast<float>(offset));
+        }
+        
+        drawSmoothCurve(renderer, offsetPoints, segmentsPerPoint);
+    }
+}
+
+// Простая версия с градиентом толщины (от толстого к тонкому)
+void drawTaperedCurve(SDL_Renderer* renderer, const std::vector<Vector2>& points,
+                      int startThickness = 5, int endThickness = 1, int segmentsPerPoint = 10) {
+    if (points.size() < 2) return;
+    
+    std::vector<Vector2> controlPoints;
+    controlPoints.push_back(points[0]);
+    for (const auto& p : points) {
+        controlPoints.push_back(p);
+    }
+    controlPoints.push_back(points.back());
+    
+    for (size_t i = 0; i < controlPoints.size() - 3; i++) {
+        Vector2 p0 = controlPoints[i];
+        Vector2 p1 = controlPoints[i + 1];
+        Vector2 p2 = controlPoints[i + 2];
+        Vector2 p3 = controlPoints[i + 3];
+        
+        for (int seg = 0; seg < segmentsPerPoint; seg++) {
+            float t1 = static_cast<float>(seg) / segmentsPerPoint;
+            float t2 = static_cast<float>(seg + 1) / segmentsPerPoint;
+            
+            Vector2 point1 = catmullRomInterpolate(p0, p1, p2, p3, t1);
+            Vector2 point2 = catmullRomInterpolate(p0, p1, p2, p3, t2);
+            
+            // Вычисляем прогресс по всей кривой
+            float progress = (i + t1) / (controlPoints.size() - 3);
+            int thickness = startThickness + 
+                          static_cast<int>((endThickness - startThickness) * progress);
+            
+            // Рисуем линию с текущей толщиной
+            Vector2 dir = (point2 - point1).normalized();
+            Vector2 perp = Vector2(-dir.y, dir.x);
+            
+            for (int offset = -thickness/2; offset <= thickness/2; offset++) {
+                Vector2 offset1 = point1 + perp * static_cast<float>(offset);
+                Vector2 offset2 = point2 + perp * static_cast<float>(offset);
+                
+                SDL_RenderDrawLine(renderer,
+                    static_cast<int>(offset1.x), static_cast<int>(offset1.y),
+                    static_cast<int>(offset2.x), static_cast<int>(offset2.y));
+            }
+        }
+    }
+}
+
 SDLApp::SDLApp(const char *name, const int width, const int height)
-    : name(name), width(width), height(height), mouseClicked(false)
+    : name(name), width(width), height(height), mouseClicked(false), frameCounter(0)
 {
     
 }
@@ -123,34 +268,26 @@ void SDLApp::handleEvents()
 void SDLApp::render() {
     if (!tentacle) return;
     
-    // Рисуем сегменты щупальца
-    SDL_SetRenderDrawColor(renderer, 100, 200, 100, 255);
-    
+    std::vector<Vector2> points;
     for (auto* part : tentacle->getBodyParts()) {
-        Vector2 p1 = part->getPoint1();
-        Vector2 p2 = part->getPoint2();
-        
-        SDL_RenderDrawLine(renderer, 
-            static_cast<int>(p1.x), static_cast<int>(p1.y),
-            static_cast<int>(p2.x), static_cast<int>(p2.y));
-        
-        // Рисуем точки соединения
-        SDL_Rect rect1 = {static_cast<int>(p1.x - 3), static_cast<int>(p1.y - 3), 6, 6};
-        SDL_Rect rect2 = {static_cast<int>(p2.x - 3), static_cast<int>(p2.y - 3), 6, 6};
-        SDL_RenderFillRect(renderer, &rect1);
-        SDL_RenderFillRect(renderer, &rect2);
+        points.push_back(part->getPoint1());
     }
+    if (!tentacle->getBodyParts().empty()) {
+        points.push_back(tentacle->getBodyParts().back()->getPoint2());
+    }
+    SDL_SetRenderDrawColor(renderer, 100, 200, 100, 255);
+    drawTaperedCurve(renderer, points, 8, 2, 15);
     
-    // Рисуем курсор
-    if (mouseClicked) {
-        SDL_SetRenderDrawColor(renderer, 255, 100, 100, 255);
-        SDL_Rect cursorRect = {
-            static_cast<int>(mousePos.x - 5), 
-            static_cast<int>(mousePos.y - 5), 
-            10, 10
-        };
-        SDL_RenderFillRect(renderer, &cursorRect);
-    }
+    // // Рисуем курсор
+    // if (mouseClicked) {
+    //     SDL_SetRenderDrawColor(renderer, 255, 100, 100, 255);
+    //     SDL_Rect cursorRect = {
+    //         static_cast<int>(mousePos.x - 5), 
+    //         static_cast<int>(mousePos.y - 5), 
+    //         10, 10
+    //     };
+    //     SDL_RenderFillRect(renderer, &cursorRect);
+    // }
 }
 
 int SDLApp::update()
@@ -159,9 +296,15 @@ int SDLApp::update()
     
     handleEvents();
     
-    // Обновляем FABRIK если кнопка мыши нажата
-    if (mouseClicked && tentacle) {
-        tentacle->reachTowards(mousePos, 5);
+    // // Обновляем FABRIK если кнопка мыши нажата
+    // if (mouseClicked && tentacle) {
+    //     tentacle->reachTowards(mousePos, 5);
+    // }
+
+    if (tentacle) {
+        float x = std::cos((float)(frameCounter%120)/120*M_PI*2) * 100 + width/2;
+        float y = std::sin((float)(frameCounter%120)/120*M_PI*6) * 50 + height/2;
+        tentacle->reachTowards({x, y}, 5);
     }
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 30, 255);
@@ -170,5 +313,7 @@ int SDLApp::update()
     render();
 
     SDL_RenderPresent(renderer);
+
+    frameCounter++;
     return 1;
 }

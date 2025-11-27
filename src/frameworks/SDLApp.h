@@ -23,6 +23,7 @@ private:
     std::unique_ptr<Limb> tentacle;
     Vector2 mousePos;
     bool mouseClicked;
+    int frameCounter;
 
     void handleEvents();
     void render();
