@@ -10,8 +10,8 @@ class Limb {
 public:
     Limb(std::vector<BodyPart *> &bodyParts, std::vector<Constraint *> &constraints);
 
-    std::vector<BodyPart *> getBodyParts() { return bodyParts; }
-    std::vector<Constraint *> getConstraints() { return constraints; }
+    std::vector<BodyPart *> getBodyParts() const { return bodyParts; }
+    std::vector<Constraint *> getConstraints() const { return constraints; }
     
     // FABRIK algorithm
     void reachTowards(Vector2 target, int iterations = 10);

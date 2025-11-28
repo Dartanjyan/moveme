@@ -146,8 +146,8 @@ void drawTaperedCurve(SDL_Renderer* renderer, const std::vector<Vector2>& points
     }
 }
 
-SDLApp::SDLApp(const char *name, const int width, const int height)
-    : name(name), width(width), height(height), mouseClicked(false), frameCounter(0)
+SDLApp::SDLApp(const char *name)
+    : name(name), mouseClicked(false), frameCounter(0)
 {
     
 }
@@ -157,28 +157,11 @@ SDLApp::~SDLApp()
 
 }
 
-void SDLApp::createTentacle() {
-    const int segmentCount = 40;
-    const float segmentLength = 5.0f;
-    Vector2 basePosition(width / 2.0f, height / 2.0f);
-    
-    std::vector<BodyPart*> bodyParts;
-    std::vector<Constraint*> constraints;
-    
-    for (int i = 0; i < segmentCount; i++) {
-        Vector2 p1 = basePosition + Vector2(0, i * segmentLength);
-        Vector2 p2 = basePosition + Vector2(0, (i + 1) * segmentLength);
-        bodyParts.push_back(new BodyPart(nullptr, p1, p2));
-        
-        if (i > 0) {
-            constraints.push_back(new Constraint(bodyParts[i-1], bodyParts[i]));
-        }
-    }
-    
-    tentacle = std::make_unique<Limb>(bodyParts, constraints);
-}
+int SDLApp::initialize(unsigned width, unsigned height, const GameState *gameState) {
+    this->gameState = gameState;
+    this->_width = width;
+    this->_height = height;
 
-int SDLApp::initialize() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cerr << "Couldn't initialize SDL: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -222,19 +205,16 @@ int SDLApp::initialize() {
         std::cout << "Using accelerated (GPU) rendering." << std::endl;
     }
 
-    createTentacle();
     return 0;
 }
 
 void SDLApp::shutdown()
 {
-    tentacle.reset();
-    
     SDL_DestroyRenderer(renderer);
-    renderer = NULL;
+    renderer = nullptr;
 
     SDL_DestroyWindow(window);
-    window = NULL;
+    window = nullptr;
     
     SDL_Quit();
 }
@@ -266,6 +246,7 @@ void SDLApp::handleEvents()
 }
 
 void SDLApp::render() {
+    const Limb *tentacle = gameState->tentacle;
     if (!tentacle) return;
     
     std::vector<Vector2> points;
@@ -289,12 +270,6 @@ int SDLApp::update()
     // if (mouseClicked && tentacle) {
     //     tentacle->reachTowards(mousePos, 5);
     // }
-
-    if (tentacle) {
-        float x = std::cos((float)(frameCounter%120)/120*M_PI*2) * 100 + width/2;
-        float y = std::sin((float)(frameCounter%120)/120*M_PI*6) * 50 + height/2;
-        tentacle->reachTowards({x, y}, 5);
-    }
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 30, 255);
     SDL_RenderClear(renderer);

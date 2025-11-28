@@ -6,10 +6,14 @@ BodyPart::BodyPart(BodyPart *parent, Vector2 p1, Vector2 p2, float width1, float
     }
 
     if (width1 == 0) {
-        width1 = (p2 - p1).length()*2;
+        width1 = (p2 - p1).length();
+        width1 *= width1;
+        width1 /= 2;
     }
     if (width2 == 0) {
-        width2 = (p2 - p1).length()*2;
+        width2 = (p2 - p1).length();
+        width2 *= width2;
+        width2 /= 2;
     }
 }
 
