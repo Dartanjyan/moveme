@@ -1,24 +1,23 @@
 #include "Creature.h"
 
-Creature::Creature(BodyPart *body, std::vector<Limb *> &limbs)
-    : body(body), limbs(limbs)
+Creature::Creature(std::unique_ptr<BodyPart> body, std::vector<Limb *> &limbs)
+    : body(std::move(body)), limbs(limbs)
 {
 }
 
 Creature::~Creature()
 {
-    delete body;
-    for (auto l : limbs) {
+    for (Limb *l : limbs) {
         delete l;
     }
 }
 
-Creature* createBasicCreature()
+std::unique_ptr<Creature> createBasicCreature()
 {
     float scale = 1.0f;
     Vector2 bias(200, 200);
 
-    BodyPart *body = new BodyPart(nullptr, Vector2(0, 0)*scale+bias, Vector2(200, 0)*scale+bias);
+    auto body = std::make_unique<BodyPart>(nullptr, Vector2(0, 0)*scale+bias, Vector2(200, 0)*scale+bias);
 
     BodyPart *b1 = new BodyPart(nullptr, Vector2(100, 0)*scale+bias, Vector2(100, 200)*scale+bias);
     BodyPart *b2 = new BodyPart(nullptr, Vector2(100, 200)*scale+bias, Vector2(100, 250)*scale+bias);
@@ -34,6 +33,6 @@ Creature* createBasicCreature()
 
     std::vector<Limb *> limbs {limb};
 
-    Creature *creature = new Creature(body, limbs);
-    return creature;
+    auto creature = std::make_unique<Creature>(std::move(body), limbs);
+    return std::move(creature);
 }

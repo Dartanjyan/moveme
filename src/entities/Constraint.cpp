@@ -103,7 +103,7 @@ Vector2 findClosestPoint(const BodyPart* part1, const BodyPart* part2) {
     return (closestOn1to2 + closestOn2to1) * 0.5f;
 }
 
-Constraint::Constraint(BodyPart* partA, BodyPart* partB, Vector2 anchor, float power): 
+Constraint::Constraint(const BodyPart* partA, const BodyPart* partB, const Vector2& anchor, float power): 
     partA(partA),
     partB(partB),
     anchor(anchor),
@@ -111,12 +111,13 @@ Constraint::Constraint(BodyPart* partA, BodyPart* partB, Vector2 anchor, float p
 {
 }
 
-Constraint::Constraint(BodyPart *partA, BodyPart *partB, float power): 
-    partA(partA),
-    partB(partB),
-    power(power)
+Constraint::Constraint(const BodyPart *_partA, const BodyPart *_partB, float power): 
+    partA(_partA),
+    partB(_partB),
+    power(power),
+    anchor(findBestContactPoint(_partA, _partB))
 {
-    this->anchor = findBestContactPoint(partA, partB);
+    // this->anchor = findBestContactPoint(partA, partB);
 }
 
 float Constraint::clampAngle(float angle) const
