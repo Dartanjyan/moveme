@@ -15,32 +15,29 @@ ApplicationManager::ApplicationManager(std::unique_ptr<IApplication> app)
     const float segmentLength = 5.0f;
     Vector2 basePosition(width / 2.0f, height / 2.0f);
     
-    std::vector<BodyPart*> bodyParts;
-    std::vector<Constraint*> constraints;
+    std::vector<std::unique_ptr<BodyPart>> bodyParts;
+    std::vector<std::unique_ptr<Constraint>> constraints;
     
     for (int i = 0; i < segmentCount; i++) {
         Vector2 p1 = basePosition + Vector2(0, i * segmentLength);
         Vector2 p2 = basePosition + Vector2(0, (i + 1) * segmentLength);
-        bodyParts.push_back(new BodyPart(nullptr, p1, p2));
+        bodyParts.push_back(std::move(std::make_unique<BodyPart>(nullptr, p1, p2)));
         if (i > 0) {
-            constraints.push_back(new Constraint(bodyParts[i-1], bodyParts[i]));
+            constraints.push_back(std::move(std::make_unique<Constraint>(bodyParts[i-1].get(), bodyParts[i].get())));
         }
     }
     
-    gameState.tentacle = new Limb(bodyParts, constraints);
+    gameState.tentacle = std::make_unique<Limb>(bodyParts, constraints);
 }
 
 ApplicationManager::~ApplicationManager()
 {
     app->shutdown();
-
-    delete gameState.tentacle;
-    gameState.tentacle = nullptr;
 }
 
 int ApplicationManager::gameTick()
 {
-    Limb *tentacle = gameState.tentacle;
+    auto& tentacle = gameState.tentacle;
     if (tentacle) {
         float x = std::cos((float)(tickCounter%120)/120*M_PI*2) * 100 + width/2;
         float y = std::sin((float)(tickCounter%120)/120*M_PI*6) * 50 + height/2;

@@ -6,7 +6,7 @@
 #include "Limb.h"
 
 struct GameState {
-    Limb* tentacle;
+    std::unique_ptr<Limb> tentacle;
 };
 
 #endif

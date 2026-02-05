@@ -6,8 +6,10 @@
 
 class Constraint {
 private:
+    // TODO: partA and partB should be shared_ptr
     const BodyPart* partA;
     const BodyPart* partB;
+
     const Vector2 anchor;
     float power;
     float minAngle;

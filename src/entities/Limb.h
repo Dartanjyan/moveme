@@ -9,10 +9,10 @@
 
 class Limb {
 public:
-    Limb(std::vector<std::unique_ptr<BodyPart>> &bodyParts, std::vector<std::unique_ptr<Constraint>> &constraints);
+    Limb(std::vector<std::unique_ptr<BodyPart>> bodyParts, std::vector<std::unique_ptr<Constraint>> constraints);
 
-    // std::vector<BodyPart *> getBodyParts() const { return bodyParts; }
-    // std::vector<Constraint *> getConstraints() const { return constraints; }
+    std::vector<const BodyPart *> getBodyParts() const;
+    std::vector<const Constraint *> getConstraints() const;
     
     // FABRIK algorithm
     void reachTowards(const Vector2& target, const int iterations = 10);

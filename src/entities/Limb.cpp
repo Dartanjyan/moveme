@@ -8,7 +8,27 @@ Limb::Limb(std::vector<std::unique_ptr<BodyPart>> bodyParts,
 {
 }
 
-void Limb::forwardReach(Vector2 target) {
+std::vector<const BodyPart *> Limb::getBodyParts() const
+{
+    std::vector<const BodyPart *> _bodyParts;
+    _bodyParts.reserve(bodyParts.size());
+    for (size_t i = 0; i < bodyParts.size(); i++) {
+        _bodyParts.emplace_back(bodyParts[i].get());
+    }
+    return _bodyParts;
+}
+
+std::vector<const Constraint *> Limb::getConstraints() const
+{
+    std::vector<const Constraint *> _constraints;
+    _constraints.reserve(constraints.size());
+    for (size_t i = 0; i < constraints.size(); i++) {
+        _constraints.emplace_back(constraints[i].get());
+    }
+    return _constraints;
+}
+
+void Limb::forwardReach(const Vector2& target) {
     if (bodyParts.empty()) return;
     
     // Последний сегмент тянется к цели
@@ -17,8 +37,8 @@ void Limb::forwardReach(Vector2 target) {
     
     // Идем от конца к началу
     for (int i = lastIndex; i > 0; i--) {
-        BodyPart* current = bodyParts[i];
-        BodyPart* previous = bodyParts[i - 1];
+        auto& current = bodyParts[i];
+        auto& previous = bodyParts[i - 1];
         
         Vector2 p2 = current->getPoint2();
         Vector2 p1 = current->getPoint1();
@@ -36,7 +56,7 @@ void Limb::forwardReach(Vector2 target) {
     }
 }
 
-void Limb::backwardReach(Vector2 base) {
+void Limb::backwardReach(const Vector2& base) {
     if (bodyParts.empty()) return;
     
     // Первый сегмент закреплен в базовой точке
@@ -44,8 +64,8 @@ void Limb::backwardReach(Vector2 base) {
     
     // Идем от начала к концу
     for (size_t i = 0; i < bodyParts.size() - 1; i++) {
-        BodyPart* current = bodyParts[i];
-        BodyPart* next = bodyParts[i + 1];
+        auto& current = bodyParts[i];
+        auto& next = bodyParts[i + 1];
         
         Vector2 p1 = current->getPoint1();
         Vector2 p2 = current->getPoint2();
@@ -63,7 +83,7 @@ void Limb::backwardReach(Vector2 base) {
     }
 }
 
-void Limb::reachTowards(Vector2 target, int iterations) {
+void Limb::reachTowards(const Vector2& target, const int iterations) {
     if (bodyParts.empty()) return;
     
     // Сохраняем базовую точку (начало щупальца)
@@ -72,7 +92,7 @@ void Limb::reachTowards(Vector2 target, int iterations) {
     // Вычисляем общую длину всех сегментов
     float totalLength = 0.0f;
     std::vector<float> segmentLengths;
-    for (auto* part : bodyParts) {
+    for (const auto& part : bodyParts) {
         float length = (part->getPoint2() - part->getPoint1()).length();
         segmentLengths.push_back(length);
         totalLength += length;

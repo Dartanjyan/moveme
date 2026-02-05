@@ -246,16 +246,17 @@ void SDLApp::handleEvents()
 }
 
 void SDLApp::render() {
-    const Limb *tentacle = gameState->tentacle;
+    const auto& tentacle = gameState->tentacle;
     if (!tentacle) return;
     
     std::vector<Vector2> points;
-    for (auto* part : tentacle->getBodyParts()) {
+    for (auto part : tentacle->getBodyParts()) {
         points.push_back(part->getPoint1());
     }
     if (!tentacle->getBodyParts().empty()) {
         points.push_back(tentacle->getBodyParts().back()->getPoint2());
     }
+    
     SDL_SetRenderDrawColor(renderer, 100, 200, 100, 255);
     drawTaperedCurve(renderer, points, 8, 2, 15);
 }
