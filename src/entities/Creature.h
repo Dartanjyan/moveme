@@ -8,7 +8,7 @@
 
 class Creature {
 public:
-    Creature(std::unique_ptr<BodyPart> body, std::vector<std::unique_ptr<Limb>> &limbs);
+    Creature(std::shared_ptr<BodyPart> body, std::vector<std::unique_ptr<Limb>> limbs);
     ~Creature();
 
     // std::vector<Limb *> getLimbs() const { return limbs; }
@@ -17,7 +17,7 @@ public:
     static std::unique_ptr<Creature> createBasicCreature();
 private:
     std::vector<std::unique_ptr<Limb>> limbs;
-    std::unique_ptr<BodyPart> body;
+    std::shared_ptr<BodyPart> body;
 };
 
 #endif

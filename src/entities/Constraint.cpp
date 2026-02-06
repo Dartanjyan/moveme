@@ -29,7 +29,7 @@ float distance(const Vector2& a, const Vector2& b) {
 }
 
 // Основная функция
-Vector2 findBestContactPoint(const BodyPart* part1, const BodyPart* part2) {
+Vector2 findBestContactPoint(std::shared_ptr<BodyPart> part1, std::shared_ptr<BodyPart> part2) {
     // Получаем точки отрезков
     Vector2 a = part1->getPoint1();
     Vector2 b = part1->getPoint2();
@@ -89,7 +89,7 @@ Vector2 findBestContactPoint(const BodyPart* part1, const BodyPart* part2) {
 }
 
 // Альтернативная версия, которая возвращает просто ближайшую точку на одном отрезке к другому
-Vector2 findClosestPoint(const BodyPart* part1, const BodyPart* part2) {
+Vector2 findClosestPoint(std::shared_ptr<BodyPart> part1, std::shared_ptr<BodyPart> part2) {
     Vector2 a = part1->getPoint1();
     Vector2 b = part1->getPoint2();
     Vector2 c = part2->getPoint1();
@@ -103,7 +103,7 @@ Vector2 findClosestPoint(const BodyPart* part1, const BodyPart* part2) {
     return (closestOn1to2 + closestOn2to1) * 0.5f;
 }
 
-Constraint::Constraint(const BodyPart* partA, const BodyPart* partB, const Vector2& anchor, float power): 
+Constraint::Constraint(std::shared_ptr<BodyPart> partA, std::shared_ptr<BodyPart> partB, const Vector2& anchor, float power): 
     partA(partA),
     partB(partB),
     anchor(anchor),
@@ -111,7 +111,7 @@ Constraint::Constraint(const BodyPart* partA, const BodyPart* partB, const Vecto
 {
 }
 
-Constraint::Constraint(const BodyPart *_partA, const BodyPart *_partB, float power): 
+Constraint::Constraint(std::shared_ptr<BodyPart> _partA, std::shared_ptr<BodyPart> _partB, float power): 
     partA(_partA),
     partB(_partB),
     power(power),

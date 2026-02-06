@@ -15,19 +15,19 @@ ApplicationManager::ApplicationManager(std::unique_ptr<IApplication> app)
     const float segmentLength = 5.0f;
     Vector2 basePosition(width / 2.0f, height / 2.0f);
     
-    std::vector<std::unique_ptr<BodyPart>> bodyParts;
+    std::vector<std::shared_ptr<BodyPart>> bodyParts;
     std::vector<std::unique_ptr<Constraint>> constraints;
     
     for (int i = 0; i < segmentCount; i++) {
         Vector2 p1 = basePosition + Vector2(0, i * segmentLength);
         Vector2 p2 = basePosition + Vector2(0, (i + 1) * segmentLength);
-        bodyParts.push_back(std::move(std::make_unique<BodyPart>(nullptr, p1, p2)));
+        bodyParts.push_back(std::move(std::make_shared<BodyPart>(nullptr, p1, p2)));
         if (i > 0) {
-            constraints.push_back(std::move(std::make_unique<Constraint>(bodyParts[i-1].get(), bodyParts[i].get())));
+            constraints.push_back(std::move(std::make_unique<Constraint>(bodyParts[i-1], bodyParts[i])));
         }
     }
     
-    gameState.tentacle = std::make_unique<Limb>(bodyParts, constraints);
+    gameState.tentacle = std::make_unique<Limb>(bodyParts, std::move(constraints));
 }
 
 ApplicationManager::~ApplicationManager()

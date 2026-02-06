@@ -9,8 +9,9 @@
 
 class Limb {
 public:
-    Limb(std::vector<std::unique_ptr<BodyPart>> bodyParts, std::vector<std::unique_ptr<Constraint>> constraints);
+    Limb(std::vector<std::shared_ptr<BodyPart>> bodyParts, std::vector<std::unique_ptr<Constraint>> constraints);
 
+    // TODO: change to weak_ptr maybe?
     std::vector<const BodyPart *> getBodyParts() const;
     std::vector<const Constraint *> getConstraints() const;
     
@@ -18,7 +19,7 @@ public:
     void reachTowards(const Vector2& target, const int iterations = 10);
     
 private:
-    std::vector<std::unique_ptr<BodyPart>> bodyParts;
+    std::vector<std::shared_ptr<BodyPart>> bodyParts;
     std::vector<std::unique_ptr<Constraint>> constraints;
     
     void forwardReach(const Vector2& target);

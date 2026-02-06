@@ -1,7 +1,7 @@
 #include "Limb.h"
 #include <cmath>
 
-Limb::Limb(std::vector<std::unique_ptr<BodyPart>> bodyParts,
+Limb::Limb(std::vector<std::shared_ptr<BodyPart>> bodyParts,
            std::vector<std::unique_ptr<Constraint>> constraints)
     : bodyParts(std::move(bodyParts)),
       constraints(std::move(constraints))
