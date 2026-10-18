@@ -5,7 +5,7 @@
 
 int main() {
     auto app = std::make_unique<SDLApp>("Move Me!");
-    ApplicationManager am(std::move(app));
+    ClientApp am(std::move(app));
 
     int result = am.run();
 

@@ -1,21 +1,19 @@
-#ifndef APPLICATIONMANAGER_H
-#define APPLICATIONMANAGER_H
+#ifndef CLIENTAPP_H
+#define CLIENTAPP_H
 
 #include <memory>
 #include <chrono>
-#include "GameState.h"
 #include "IApplication.h"
 
-class ApplicationManager {
+class ClientApp {
 public:
-    ApplicationManager(std::unique_ptr<IApplication> app);
-    ~ApplicationManager();
+    ClientApp(std::unique_ptr<IApplication> app);
+    ~ClientApp();
     
     // Main application cycle
     int run();
     int gameTick();
 private:
-    GameState gameState;
     std::unique_ptr<IApplication> app;
     std::chrono::milliseconds updateInterval;
     unsigned tickCounter;
@@ -24,4 +22,4 @@ private:
     float width = 800, height = 600;
 };
 
-#endif // APPLICATIONMANAGER_H
+#endif // CLIENTAPP_H

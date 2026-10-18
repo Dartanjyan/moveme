@@ -157,8 +157,7 @@ SDLApp::~SDLApp()
 
 }
 
-int SDLApp::initialize(unsigned width, unsigned height, const GameState *gameState) {
-    this->gameState = gameState;
+int SDLApp::initialize(unsigned width, unsigned height) {
     this->_width = width;
     this->_height = height;
 
@@ -251,32 +250,25 @@ void SDLApp::handleEvents()
     }
 }
 
-void SDLApp::render() {
-    const auto& tentacle = gameState->tentacle;
-    if (!tentacle) return;
+void SDLApp::render(const WorldSnapshot &s) {
+    // const auto& tentacle = gameState->tentacle;
+    // if (!tentacle) return;
     
-    std::vector<Vector2> points;
-    for (auto part : tentacle->getBodyParts()) {
-        auto locked = part.lock();
-        if (locked) {
-            points.push_back(locked->getPoint1());
-        }
-    }
-    if (!tentacle->getBodyParts().empty()) {
-        auto locked = tentacle->getBodyParts().back().lock();
-        if (locked) {
-            points.push_back(locked->getPoint2());
-        }
-    }
+    // std::vector<Vector2> points;
+    // for (auto part : tentacle->getBodyParts()) {
+    //     auto locked = part.lock();
+    //     if (locked) {
+    //         points.push_back(locked->getPoint1());
+    //     }
+    // }
+    // if (!tentacle->getBodyParts().empty()) {
+    //     auto locked = tentacle->getBodyParts().back().lock();
+    //     if (locked) {
+    //         points.push_back(locked->getPoint2());
+    //     }
+    // }
     
-    // SDL_SetRenderDrawColor(renderer, 100, 200, 100, 255);
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    drawTaperedCurve(renderer, points, 8, 2, 15);
-}
-
-int SDLApp::update()
-{
-    if (!renderer || !window) return 0;
+    if (!renderer || !window) return;
     
     handleEvents();
     
@@ -288,11 +280,12 @@ int SDLApp::update()
     // SDL_SetRenderDrawColor(renderer, 20, 20, 30, 255);
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
     SDL_RenderClear(renderer);
-
-    render();
+    
+    // SDL_SetRenderDrawColor(renderer, 100, 200, 100, 255);
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderDrawLine(renderer, 10, 10, 100, 200);
+    // drawTaperedCurve(renderer, points, 8, 2, 15);
 
     SDL_RenderPresent(renderer);
-
     frameCounter++;
-    return 1;
 }

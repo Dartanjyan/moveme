@@ -5,27 +5,24 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(SDL2 REQUIRED)
-# find_package(SDL2_image REQUIRED)
-# find_package(SDL2_ttf REQUIRED)
+find_package(Threads REQUIRED)
 
-include_directories(
-    "src"
-    "src/dto"
-    "src/entities"
-    "src/use_cases"
-    "src/interfaces"
-    "src/frameworks"
-    ${SDL2_INCLUDE_DIRS}
-    # ${SDL2_IMAGE_INCLUDE_DIRS}
-    # ${SDL2_TTF_INCLUDE_DIRS}
-)
+# Ядро: симуляция, протокол. SDL здесь нет
+file(GLOB_RECURSE CORE_SRC CONFIGURE_DEPENDS
+    src/entities/*.cpp src/dto/*.cpp src/use_cases/*.cpp src/interfaces/*.cpp)
+add_library(moveme_core STATIC ${CORE_SRC})
+target_include_directories(moveme_core PUBLIC
+    src src/dto src/entities src/use_cases src/interfaces)
+target_link_libraries(moveme_core PUBLIC Threads::Threads)
 
-file(GLOB_RECURSE SRC src/*.cpp src/*.h)
+# Клиент
+file(GLOB_RECURSE CLIENT_SRC CONFIGURE_DEPENDS src/client/*.cpp src/frameworks/*.cpp)
+add_executable(moveme ${CLIENT_SRC})
+target_include_directories(moveme PRIVATE src/client src/frameworks ${SDL2_INCLUDE_DIRS})
+target_link_libraries(moveme PRIVATE moveme_core ${SDL2_LIBRARIES})
 
-add_executable(moveme ${SRC})
-
-target_link_libraries(moveme
-    ${SDL2_LIBRARIES}
-    # ${SDL2_IMAGE_LIBRARIES}
-    # ${SDL2_TTF_LIBRARIES}
-)
+# Сервер: без SDL
+file(GLOB_RECURSE SERVER_SRC CONFIGURE_DEPENDS src/server/*.cpp)
+add_executable(moveme_server ${SERVER_SRC})
+target_include_directories(moveme_server PRIVATE src/server)
+target_link_libraries(moveme_server PRIVATE moveme_core)

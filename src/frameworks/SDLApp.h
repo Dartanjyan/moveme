@@ -5,17 +5,15 @@
 #include <memory>
 #include "IApplication.h"
 #include "Vector2.h"
-#include "GameState.h"
 
 class SDLApp : public IApplication {
 public:
     SDLApp(const char *name);
     ~SDLApp();
 
-    int initialize(unsigned width, unsigned height, const GameState *gameState) override;
+    int initialize(unsigned width, unsigned height) override;
     void shutdown() override;
-    // Must return 1 for application to continue working
-    int update() override;
+    void render(const WorldSnapshot& s) override;
 private:
     SDL_Renderer *renderer;
     SDL_Window *window;
@@ -25,10 +23,8 @@ private:
     Vector2 mousePos;
     bool mouseClicked;
     int frameCounter;
-    const GameState *gameState;
 
     void handleEvents();
-    void render();
 };
 
 #endif
