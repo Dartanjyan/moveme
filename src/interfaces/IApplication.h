@@ -9,6 +9,7 @@ public:
 
     virtual int initialize(unsigned width, unsigned height, const GameState *gameState) = 0;
     virtual void shutdown() = 0;
+    // Must return 1 for application to run
     virtual int update() = 0;
 };
 

@@ -5,29 +5,34 @@
 ApplicationManager::ApplicationManager(std::unique_ptr<IApplication> app)
     : app(std::move(app)), updateInterval(std::chrono::milliseconds(16)), tickCounter(0)
 {
-    this->app->initialize(width, height, &gameState);
+    if (this->app->initialize(width, height, &gameState) != 0) {
+        std::cerr << "ApplicationManager: could not initialize Application, stopping" << std::endl;
+        return;
+    }
     
     gameState = GameState();
 
     // Create tentacle
     // TODO: Move to another function later
-    const int segmentCount = 40;
-    const float segmentLength = 5.0f;
+    const int segmentCount = 3;
+    const float segmentLength = 5.0f*10;
     Vector2 basePosition(width / 2.0f, height / 2.0f);
     
     std::vector<std::shared_ptr<BodyPart>> bodyParts;
-    std::vector<std::unique_ptr<Constraint>> constraints;
+    std::vector<std::shared_ptr<Constraint>> constraints;
     
     for (int i = 0; i < segmentCount; i++) {
         Vector2 p1 = basePosition + Vector2(0, i * segmentLength);
         Vector2 p2 = basePosition + Vector2(0, (i + 1) * segmentLength);
         bodyParts.push_back(std::move(std::make_shared<BodyPart>(nullptr, p1, p2)));
         if (i > 0) {
-            constraints.push_back(std::move(std::make_unique<Constraint>(bodyParts[i-1], bodyParts[i])));
+            constraints.push_back(std::move(std::make_shared<Constraint>(bodyParts[i-1], bodyParts[i])));
         }
     }
     
     gameState.tentacle = std::make_unique<Limb>(bodyParts, std::move(constraints));
+
+    initialized = true;
 }
 
 ApplicationManager::~ApplicationManager()
@@ -49,6 +54,9 @@ int ApplicationManager::gameTick()
 
 int ApplicationManager::run()
 {
+    if (!initialized)
+        return 1;
+    
     using namespace std::chrono;
     auto previous_time = high_resolution_clock::now();
     system_clock::time_point current_time;
@@ -61,7 +69,10 @@ int ApplicationManager::run()
         previous_time = current_time;
 
         // Code
+        // Call render
+        // TODO: move render to separate thread
         running &= app->update() == 1;
+        // Call game tick
         running &= this->gameTick() == 1;
         
         const auto processing_time = duration_cast<milliseconds>(

@@ -10,7 +10,8 @@ class ApplicationManager {
 public:
     ApplicationManager(std::unique_ptr<IApplication> app);
     ~ApplicationManager();
-
+    
+    // Main application cycle
     int run();
     int gameTick();
 private:
@@ -18,7 +19,8 @@ private:
     std::unique_ptr<IApplication> app;
     std::chrono::milliseconds updateInterval;
     unsigned tickCounter;
-    
+
+    bool initialized = false;
     float width = 800, height = 600;
 };
 

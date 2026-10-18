@@ -10,7 +10,7 @@ public:
     ~BodyPart();
 
     std::vector<BodyPart *> getChildren() const { return children; }
-    BodyPart* getParent() const { return parent; }
+    BodyPart *const getParent() const { return parent; }
     void addChild(BodyPart *child) { children.push_back(child); }
     Vector2 getPoint1() const { return p1; }
     Vector2 getPoint2() const { return p2; }

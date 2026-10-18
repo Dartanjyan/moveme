@@ -2,28 +2,28 @@
 #include <cmath>
 
 Limb::Limb(std::vector<std::shared_ptr<BodyPart>> bodyParts,
-           std::vector<std::unique_ptr<Constraint>> constraints)
+           std::vector<std::shared_ptr<Constraint>> constraints)
     : bodyParts(std::move(bodyParts)),
       constraints(std::move(constraints))
 {
 }
 
-std::vector<const BodyPart *> Limb::getBodyParts() const
+std::vector<std::weak_ptr<const BodyPart>> Limb::getBodyParts() const
 {
-    std::vector<const BodyPart *> _bodyParts;
+    std::vector<std::weak_ptr<const BodyPart>> _bodyParts;
     _bodyParts.reserve(bodyParts.size());
     for (size_t i = 0; i < bodyParts.size(); i++) {
-        _bodyParts.emplace_back(bodyParts[i].get());
+        _bodyParts.emplace_back(bodyParts[i]);
     }
     return _bodyParts;
 }
 
-std::vector<const Constraint *> Limb::getConstraints() const
+std::vector<std::weak_ptr<const Constraint>> Limb::getConstraints() const
 {
-    std::vector<const Constraint *> _constraints;
+    std::vector<std::weak_ptr<const Constraint>> _constraints;
     _constraints.reserve(constraints.size());
     for (size_t i = 0; i < constraints.size(); i++) {
-        _constraints.emplace_back(constraints[i].get());
+        _constraints.emplace_back(constraints[i]);
     }
     return _constraints;
 }

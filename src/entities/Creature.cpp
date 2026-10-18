@@ -9,7 +9,7 @@ Creature::~Creature()
 {
 }
 
-std::unique_ptr<Creature> createBasicCreature()
+std::unique_ptr<Creature> Creature::createBasicCreature()
 {
     float scale = 1.0f;
     const Vector2 bias(200, 200);
@@ -21,9 +21,9 @@ std::unique_ptr<Creature> createBasicCreature()
         std::make_shared<BodyPart>(nullptr, Vector2(100, 200)*scale+bias, Vector2(100, 250)*scale+bias), 
         std::make_shared<BodyPart>(nullptr, Vector2(100, 250)*scale+bias, Vector2(100, 275)*scale+bias)
     };
-    std::vector<std::unique_ptr<Constraint>> cs;
-    cs.push_back(std::make_unique<Constraint>(bps[0], bps[1]));
-    cs.push_back(std::make_unique<Constraint>(bps[1], bps[2]));
+    std::vector<std::shared_ptr<Constraint>> cs;
+    cs.push_back(std::make_shared<Constraint>(bps[0], bps[1]));
+    cs.push_back(std::make_shared<Constraint>(bps[1], bps[2]));
 
     std::vector<std::unique_ptr<Limb>> limbs;
     limbs.push_back(std::make_unique<Limb>(bps, std::move(cs)));

@@ -14,6 +14,7 @@ public:
 
     int initialize(unsigned width, unsigned height, const GameState *gameState) override;
     void shutdown() override;
+    // Must return 1 for application to continue working
     int update() override;
 private:
     SDL_Renderer *renderer;
