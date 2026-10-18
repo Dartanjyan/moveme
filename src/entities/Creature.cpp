@@ -1,7 +1,9 @@
 #include "Creature.h"
 
+uint32_t Creature::lastId = 0;
+
 Creature::Creature(std::shared_ptr<BodyPart> body, std::vector<std::unique_ptr<Limb>> limbs)
-    : body(std::move(body)), limbs(std::move(limbs))
+    : id(getNextId()), body(std::move(body)), limbs(std::move(limbs))
 {
 }
 
