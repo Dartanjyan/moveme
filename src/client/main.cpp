@@ -8,6 +8,7 @@ int main() {
   ClientApp app(std::move(sdl_app));
 
   int code = app.run();
+  
   if (code != 0) {
     std::cerr << "Application ended with return code " << code << std::endl;
     return code;

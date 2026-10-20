@@ -26,7 +26,12 @@ int main(int argc, char** argv)
   if (opt.console)
     std::thread([&]{
       std::string line;
-      while (std::getline(std::cin, line)) server.pushCommand(line);
+      std::cout << "> ";
+      while (std::getline(std::cin, line)) 
+      {
+        server.pushCommand(line);
+        std::cout << "> ";
+      }
       // EOF (stdin закрыт) — это НЕ повод останавливать сервер
     }).detach();
   server.run(stop);
