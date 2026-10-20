@@ -12,6 +12,8 @@ public:
 
   void addCreature(std::unique_ptr<Creature> creature);
   void removeCreature(uint32_t creatureId);
+
+  
 private:
   std::vector<std::unique_ptr<Creature>> creatures;
 };

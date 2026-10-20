@@ -12,7 +12,6 @@ public:
     
     // Main application cycle
     int run();
-    int gameTick();
 private:
     std::unique_ptr<IApplication> app;
     std::chrono::milliseconds updateInterval;

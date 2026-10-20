@@ -5,7 +5,7 @@
 
 class IApplication {
 public:
-    virtual ~IApplication() = default;           // см. ниже, это важно
+    virtual ~IApplication() = default;
     virtual int  initialize(unsigned w, unsigned h) = 0;
     virtual void shutdown() = 0;
     // TODO: virtual bool pollInput(InputState& out) = 0; // false = выход

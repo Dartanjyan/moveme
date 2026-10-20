@@ -38,24 +38,19 @@ ClientApp::~ClientApp()
     app->shutdown();
 }
 
-int ClientApp::gameTick()
-{
-    return 1;
-}
-
 int ClientApp::run()
 {
     if (!initialized)
         return 1;
     
     using namespace std::chrono;
-    auto previous_time = high_resolution_clock::now();
+    auto previous_time = steady_clock::now();
     system_clock::time_point current_time;
     nanoseconds elapsed_time;
     
     // int running = 1;
     // while (running == 1) {
-    //     current_time = high_resolution_clock::now();
+    //     current_time = steady_clock::now();
     //     elapsed_time = current_time - previous_time;
     //     previous_time = current_time;
 
@@ -67,7 +62,7 @@ int ClientApp::run()
     //     running &= this->gameTick() == 1;
         
     //     const auto processing_time = duration_cast<milliseconds>(
-    //         high_resolution_clock::now() - current_time
+    //         steady_clock::now() - current_time
     //     );
     //     const auto sleep_time = this->updateInterval - processing_time;
     //     // std::cout << sleep_time.count() << " ms" << std::endl;
