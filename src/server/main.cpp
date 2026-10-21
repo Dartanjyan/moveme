@@ -1,8 +1,20 @@
 #include "GameServer.h"
+#include "CommandParser.h"
 #include <atomic>
-#include <thread>
-#include <iostream>
 #include <cstring>
+
+ServerOpts parseArgs(int argc, char** argv);
+
+int main(int argc, char** argv)
+{
+  auto opt = parseArgs(argc, argv);
+  GameServer server(opt);
+
+  std::atomic<bool> stop{false};
+  server.run(stop);
+
+  return 0;
+}
 
 ServerOpts parseArgs(int argc, char** argv)
 {
@@ -16,26 +28,4 @@ ServerOpts parseArgs(int argc, char** argv)
     }
   }
   return options;
-}
-
-int main(int argc, char** argv)
-{
-  auto opt = parseArgs(argc, argv);
-  GameServer server(opt);
-  std::atomic<bool> stop{false};
-  if (opt.console)
-    std::thread([&]{
-      std::string line;
-      std::cout << "> ";
-      while (std::getline(std::cin, line)) 
-      {
-        server.pushCommand(line);
-        std::cout << "> ";
-      }
-      // EOF (stdin закрыт) — это НЕ повод останавливать сервер
-    }).detach();
-  server.run(stop);
-  std::cout << "Hello Server!" << std::endl;
-
-  return 0;
 }

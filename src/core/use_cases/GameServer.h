@@ -5,9 +5,11 @@
 #include <queue>
 #include <atomic>
 
+#include "CommandParser.h"
+
 struct ServerOpts
 {
-  bool console = true;
+  bool console = false;
 };
 
 class GameServer
@@ -16,10 +18,14 @@ public:
   GameServer(ServerOpts &opt);
   
   void run(std::atomic<bool> &stop);
-  void pushCommand(std::string command);
+  void pushCommand(Command command);
 private:
+  std::atomic_bool running;
   ServerOpts opt;
-  std::queue<std::string> commandsQueue;
+  std::queue<Command>commandsQueue;
+
+  void executeCommands();
+  void processConsoleInput();
 };
 
 #endif
