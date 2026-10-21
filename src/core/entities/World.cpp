@@ -2,12 +2,18 @@
 
 #include <algorithm>
 
-World::World()
+World::World(std::unique_ptr<IPhysics> physicsEngine)
+    : physicsEngine(std::move(physicsEngine))
 {
 }
 
 World::~World()
 {
+}
+
+void World::tick(float dt)
+{
+    physicsEngine->step(dt);
 }
 
 void World::addCreature(std::unique_ptr<Creature> creature)

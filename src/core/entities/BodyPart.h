@@ -2,6 +2,7 @@
 #define BODYPART_H
 
 #include <vector>
+#include "IPhysics.h"
 #include "Vector2.h"
 
 class BodyPart {
@@ -14,20 +15,16 @@ public:
     void addChild(BodyPart *child) { children.push_back(child); }
     Vector2 getPoint1() const { return p1; }
     Vector2 getPoint2() const { return p2; }
-    float getWidth1() const { return width1; }
-    float getWidth2() const { return width2; }
     
     void setPoint1(const Vector2& point) { p1 = point; }
     void setPoint2(const Vector2& point) { p2 = point; }
-    void setWidth1(const float width) { width1 = width; }
-    void setWidth2(const float width) { width2 = width; }
+    // void setWidth1(const float width) { width1 = width; }
+    // void setWidth2(const float width) { width2 = width; }
     
 private:
     // p1 is starting point
     Vector2 p1, p2;
-
-    // width1 is visible width of BodyPart at the p1, the same with p2
-    float width1, width2;
+    PhysBodyId bodyId;
 
     std::vector<BodyPart *> children;
     BodyPart *parent;
