@@ -25,6 +25,7 @@ private:
     // p1 is starting point
     Vector2 p1, p2;
     PhysBodyId bodyId;
+    float width1, width2;
 
     std::vector<BodyPart *> children;
     BodyPart *parent;
